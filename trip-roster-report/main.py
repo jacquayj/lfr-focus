@@ -23,7 +23,10 @@ print("Number of missions: {}".format(len(missions)))
 
 with open('report.csv', 'w') as csvfile:
     filewriter = csv.writer(csvfile, delimiter=',')
-    filewriter.writerow(["missionId", "missionName", "missionStatus", 'firstName', 'lastName', 'age', 'email', 'phone', 'dateOfBirth', 'gender', 'address', 'confirmedDateTime', 'participantType', 'donationUrl', 'removedDateTime', 'applicationCompletionDate', 'applicationDecision', 'applicationDecisionDate', 'applicationDecisionComment', 'tripStory', 'fundRaisingGoal', 'hasMetReferencesRequirement', 'hasBackgroundCheck', 'donationBalance', 'isApplicant', 'profileQuestions', 'applicationQuestions', 'references', 'emergencyContacts', 'activityLog'])
+
+    csv_headers = ["missionId", "missionName", "missionStatus", 'firstName', 'lastName', 'age', 'email', 'phone', 'dateOfBirth', 'gender', 'address', 'confirmedDateTime', 'participantType', 'donationUrl', 'removedDateTime', 'applicationCompletionDate', 'applicationDecision', 'applicationDecisionDate', 'applicationDecisionComment', 'tripStory', 'fundRaisingGoal', 'hasMetReferencesRequirement', 'hasBackgroundCheck', 'donationBalance', 'isApplicant', 'profileQuestions', 'references', 'emergencyContacts', 'activityLog']
+
+    has_written_csv_header_questions = False
 
     for mission in missions:
         if mission['missionStatus']['name'] != 'Launched':
@@ -35,9 +38,19 @@ with open('report.csv', 'w') as csvfile:
             if person['applicationDecision'] == None or person['removedDateTime'] != None:
                 continue
 
+            # The questions are different per trip...
+
+            # if not has_written_csv_header_questions:
+            #     has_written_csv_header_questions = True
+                
+            #     for q in person['applicationQuestions']:
+            #         csv_headers.append()
+
+            #     filewriter.writerow(csv_headers)
+
             age = calculate_age(parse(person['dateOfBirth']))
             if person['address'] != None:
-                address = "{}\n{}, {} {}".format((str(person['address']['line1']) + "\n" + str(person['address']['line2'])).strip(), str(person['address']['city']),str(person['address']['province']), str(person['address']['postalCode']))
+                address = "{}\n{}, {} {}".format((str(person['address']['line1']) + "\n" + str(person['address']['line2'])).strip(), str(person['address']['city']), str(person['address']['province']), str(person['address']['postalCode']))
             else:
                 address = "none"
 
@@ -70,7 +83,6 @@ with open('report.csv', 'w') as csvfile:
                 person['donationBalance'],
                 person['isApplicant'],
                 person['profileQuestions'],
-                person['applicationQuestions'],
                 person['references'],
                 person['emergencyContacts'],
                 person['activityLog']
