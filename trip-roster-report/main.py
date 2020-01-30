@@ -158,6 +158,7 @@ def main():
             p.add_answers(csv_headers_to_append)
             filewriter.writerow(p.csv_row)
 
+    print("Done")
 
 if __name__ == '__main__':
     main()

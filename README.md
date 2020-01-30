@@ -8,13 +8,16 @@ https://docs.python-guide.org/starting/install3/osx/
 
 Open terminal into the repository folder
 
-Create and enter the virtual environment
+Create the virtual environment
 ```
-$ python3 -v venv .venv
+$ python3 -m venv .venv
+```
+Enter the virtual environment (to pull fresh report start here if starting new session in terminal) 
+```
 $ source .venv/bin/activate
 ```
 
-## Install dependencies
+## Install dependencies - initial set up only
 
 ```
 $ pip install requests
