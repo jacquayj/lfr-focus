@@ -86,9 +86,17 @@ class Participant:
             try:
                 # Find index of answer cells to add question answer to
                 i = question_headers.index(q['name'])
-                answer_cells_to_append[i] = q['answers'][0]['value']
+
+                if len(q['answers']) > 0:
+                    answer_cells_to_append[i] = q['answers'][0]['value']
+                else:
+                    answer_cells_to_append[i] = "No answer provided"
+
             except Exception as e:
-                pass
+                print(i)
+                print(q['answers'])
+                print("Uh oh, something bad happened")
+                print(e)
         
         self.csv_row.extend(answer_cells_to_append)
     
@@ -140,7 +148,8 @@ def main():
         filewriter = csv.writer(csvfile, delimiter=',')
 
         csv_headers_to_append = get_unique_questions(participants)
-        csv_headers = ["missionId", "missionName", "missionStatus", 'firstName', 'lastName', 'age', 'email', 'phone', 'dateOfBirth', 'gender', 'address', 'confirmedDateTime', 'participantType', 'donationUrl', 'removedDateTime', 'applicationCompletionDate', 'applicationDecision', 'applicationDecisionDate', 'applicationDecisionComment', 'tripStory', 'fundRaisingGoal', 'hasMetReferencesRequirement', 'hasBackgroundCheck', 'donationBalance', 'isApplicant', 'profileQuestions', 'references', 'emergencyContacts', 'activityLog']
+        csv_headers = ["missionId", "missionName", "missionStatus", 'firstName', 'lastName', 'age', 'email', 'phone', 'dateOfBirth', 'gender', 'address', 'city', 'state', 'postal code', 'confirmedDateTime', 'participantType', 'donationUrl', 'removedDateTime', 'applicationCompletionDate', 'applicationDecision', 'applicationDecisionDate', 'applicationDecisionComment', 'tripStory', 'fundRaisingGoal', 'hasMetReferencesRequirement', 'hasBackgroundCheck', 'donationBalance', 'isApplicant', 'profileQuestions', 'references', 'emergencyContacts', 'activityLog']
+
         csv_headers.extend(csv_headers_to_append)
 
         filewriter.writerow(csv_headers)
