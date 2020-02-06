@@ -3,6 +3,9 @@ from dateutil.parser import parse
 from datetime import date
 import csv
 import sys
+import json
+
+API_BASE = 'https://lighthousefamilyretreat.focusmissions.com/api/1.0/'
 
 # For every mission we want to count the number of adults >= 18 and children for both participants and applications
 def calculate_age(born):
@@ -101,23 +104,38 @@ class Participant:
         self.csv_row.extend(answer_cells_to_append)
     
 
+def paginate_request(auth_info, resource_url_segment):
+    pagination_params = {
+        'pageSize': 100,
+        'page': 1
+    }
+
+    request = requests.get(API_BASE + resource_url_segment, params=pagination_params, headers=auth_info)
+    num_pages = json.loads(request.headers['X-Pagination'])['totalPages']
+    records = request.json()
+
+    while pagination_params['page'] < num_pages:
+        pagination_params['page'] += 1
+        request = requests.get(API_BASE + resource_url_segment, params=pagination_params, headers=auth_info)
+        records.extend(request.json())
+
+    return records
 
 # This function fetches participants from the API and joins mission info
 def fetch_participants(auth_info):
     participant_list = []
-    missions = requests.get('https://lighthousefamilyretreat.focusmissions.com/api/1.0/missions?page=1&pageSize=999999', headers=auth_info).json()
+    missions = paginate_request(auth_info, 'missions')
 
     for mission in missions:
         if mission['missionStatus']['name'] != 'Launched':
             continue
 
-        participants = requests.get('https://lighthousefamilyretreat.focusmissions.com/api/1.0/missions/{}/participants?page=1&pageSize=99999'.format(mission['id']), headers=auth_info).json()
+        participants = paginate_request(auth_info, 'missions/{}/participants'.format(mission['id']))
 
         for api_person in participants:
             if api_person['applicationDecision'] == None or api_person['removedDateTime'] != None:
                 continue
             participant_list.append(Participant(api_person, mission))
-            #print(api_person['applicationQuestions'])
 
     return participant_list        
 
