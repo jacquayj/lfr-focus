@@ -21,7 +21,11 @@ class Participant:
         self.api_person = api_person
         self.api_mission = api_mission
 
-        self.age = calculate_age(parse(api_person['dateOfBirth']))
+        try:
+            self.age = calculate_age(parse(api_person['dateOfBirth']))
+        except Exception as e:
+            self.age = 0
+
         if api_person['address'] != None:
 
             self.address = ""
